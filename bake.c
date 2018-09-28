@@ -13,34 +13,8 @@
 #include <limits.h>
 #include <unistd.h>
 
-void findwords(FILE);
 
-
-
-int main(int argc, char *argv[])
-{
-    //  ATTEMPT TO OPEN AND READ FROM PROVIDED FILENAME
-    if(fopen("Bakefile", "r") != NULL) {
-        FILE *fp = fopen("Bakefile", "r");
-        
-        if(fp == NULL) {
-            fprintf(stderr, "cannot open %s\n", "Bakefile");
-            exit(EXIT_FAILURE);
-        }
-        findwords(*fp);
-        fclose(fp);    //  WE OPENED IT, SO WE CLOSE IT
-    }
-    //  NOT PRESENT IN DIRECTORY, SO TRY PRESENT WORKING DIRECTORY
-    else {
-        char cwd[PATH_MAX];
-        if (getcwd(cwd, sizeof(cwd)) != NULL) {
-            printf("Current working dir: %s\n", cwd);
-        }
-    }
-}
-
-
-void find_words(FILE *fp)
+void findwords(FILE *fp)
 {
     char   line[BUFSIZ];
     
@@ -69,10 +43,48 @@ void find_words(FILE *fp)
             
             
             
-                    // the line after the target line is an action.
+            // the line after the target line is an action.
         }
     }
 }
+
+
+
+bool comment(char * ch)
+{
+    char hashtag = '#';
+    
+    if (ch[0] == hashtag)
+    {
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+
+
+
+int main(int argc, char *argv[])
+{
+    //  ATTEMPT TO OPEN AND READ FROM PROVIDED FILENAME
+    if(fopen("Bakefile.txt", "r") != NULL) {
+        FILE *fp = fopen("Bakefile", "r");
+        findwords(fp);
+        fclose(fp);
+    }
+    //  NOT PRESENT IN DIRECTORY, SO TRY PRESENT WORKING DIRECTORY
+    else {
+        char cwd[PATH_MAX];
+        if (getcwd(cwd, sizeof(cwd)) != NULL) {
+            printf("Current working dir: %s\n", cwd);
+        }
+    }
+}
+
+
+
 
 
 
