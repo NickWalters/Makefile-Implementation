@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
                 commentNum++;
             }
             char *ch = line;
-            wordScanner(line);
+            wordScanner(ch);
             
         }
         printf("\n\n");
