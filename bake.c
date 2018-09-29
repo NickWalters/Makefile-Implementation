@@ -15,7 +15,7 @@
 
 
 
-
+// i dont think this function works if there is whitespace before the hash (eg:    #comment)
 bool comment(char * ch)
 {
     char hashtag = '#';
