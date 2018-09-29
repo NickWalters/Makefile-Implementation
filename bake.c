@@ -15,7 +15,7 @@
 
 
 
-// i dont think this function works if there is whitespace before the hash (eg:    #comment)
+// I dont think this function works if there is whitespace before the hash (eg:    #comment)
 bool comment(char * ch)
 {
     char hashtag = '#';
@@ -30,6 +30,14 @@ bool comment(char * ch)
 }
 
 
+// this function will scan each character of the line looking for words, such as 'filename.c' or " = " for variables
+void wordScanner(char *ch){
+    while(*ch != '\0') {
+        char   word[BUFSIZ];
+        char   *w  = word;
+    }
+}
+
 
 
 int main(int argc, char *argv[])
@@ -43,9 +51,13 @@ int main(int argc, char *argv[])
         //  READ EACH LINE OF THE FILE
         while(fgets(line, sizeof line, fp) != NULL){
             printf("%s",line);
+            // my plan is to strip all the comments from the file, so it doesnt interfere with wordScanner()
             if(comment(line)){
                 commentNum++;
             }
+            char *ch = line;
+            wordScanner(line);
+            
         }
         printf("\n\n");
         printf("---------The number of comments is: %i ----------\n", commentNum); // this is for testing purposes
