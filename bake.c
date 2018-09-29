@@ -47,8 +47,8 @@ int main(int argc, char *argv[])
                 commentNum++;
             }
         }
-        printf("\n");
-        printf("The number of comments is: %i\n", commentNum); // this is for testing purposes
+        printf("\n\n");
+        printf("---------The number of comments is: %i ----------\n", commentNum); // this is for testing purposes
         
         // if the line has a " = " in it, then consider the line to be a variable declaration.
         
