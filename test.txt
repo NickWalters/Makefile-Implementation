@@ -1,0 +1,8 @@
+# this is a comment
+
+Hello this is a regular line
+
+VARIABLE = man curl
+
+Target: dependancy
+	action
