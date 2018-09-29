@@ -34,6 +34,7 @@ bool comment(char * ch)
 
 int main(int argc, char *argv[])
 {
+    int commentNum = 0;
     //  ATTEMPT TO OPEN AND READ FROM PROVIDED FILENAME
     if(fopen("Bakefile.txt", "r") != NULL) {
         FILE *fp = fopen("Bakefile.txt", "r");
@@ -42,7 +43,12 @@ int main(int argc, char *argv[])
         //  READ EACH LINE OF THE FILE
         while(fgets(line, sizeof line, fp) != NULL){
             printf("%s",line);
+            if(comment(line)){
+                commentNum++;
+            }
         }
+        printf("The number of comments is: %i", commentNum); // this is for testing purposes
+        
         // if the line has a " = " in it, then consider the line to be a variable declaration.
         
         
