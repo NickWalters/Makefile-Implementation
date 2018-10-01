@@ -18,7 +18,7 @@
 // This function checks if the line is a comment
 bool comment(char * ch)
 {
-    bool finished = false // loop condition
+    bool finished = false; // loop condition
     int i= 0;
     while(!finished){
         if(isspace(ch[i])){
@@ -37,12 +37,12 @@ bool comment(char * ch)
 
 // this function disgregards all comments in the file
 void commentStrip(FILE * fp){
-    char buffer[MAX_SIZE];
+    char buffer[9000];
     FILE * bakeOpen = fopen("Bakefile.txt", "a+");
     bool end = false;
     while(fgets(buffer, sizeof(buffer), fp) != NULL){
         if(comment(buffer[0])){
-            fprintf(bakeOpen, "%", buffer);
+            //
         }
         else{
             continue;
