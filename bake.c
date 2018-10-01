@@ -15,28 +15,44 @@
 
 
 
-// I dont think this function works if there is whitespace before the hash (eg:    #comment)
+// This function checks if the line is a comment
 bool comment(char * ch)
 {
-    char hashtag = '#';
-    
-    if (ch[0] == hashtag)
-    {
-        return true;
-    }
-    else{
-        return false;
+    bool finished = false // loop condition
+    int i= 0;
+    while(!finished){
+        if(isspace(ch[i])){
+            ch++;
+            i++;
+        }
+        else if (ch[0] == '#')
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }
 
-
-// this function will scan each character of the line looking for words, such as 'filename.c' or " = " for variables
-void wordScanner(char *ch){
-    while(*ch != '\0') {
-        char   word[BUFSIZ];
-        char   *w  = word;
+// this function disgregards all comments in the file
+void commentStrip(FILE * fp){
+    char buffer[MAX_SIZE];
+    FILE * bakeOpen = fopen("Bakefile.txt", "a+");
+    bool end = false;
+    while(!end){
+        while(fgets(buffer, sizeof(buffer), fp) != NULL){
+            if(comment(buffer[0])){
+                fprintf(bakeOpen, "%", buffer);
+            }
+            else{
+                continue;
+            }
+        }
+        end = true; // break
     }
 }
+
 
 
 
@@ -44,9 +60,8 @@ int main(int argc, char *argv[])
 {
     int commentNum = 0;
     //  ATTEMPT TO OPEN AND READ FROM PROVIDED FILENAME
-    if(fopen("Bakefile.txt", "r") != NULL) {
+    if((fopen("Bakefile.txt", "r") != NULL)) {
         FILE *fp = fopen("Bakefile.txt", "r");
-        
         char   line[BUFSIZ];
         //  READ EACH LINE OF THE FILE
         while(fgets(line, sizeof line, fp) != NULL){
