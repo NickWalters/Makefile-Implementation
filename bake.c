@@ -59,29 +59,11 @@ int main(int argc, char *argv[])
     //  ATTEMPT TO OPEN AND READ FROM PROVIDED FILENAME
     if((fopen("Bakefile.txt", "r") != NULL)) {
         FILE *fp = fopen("Bakefile.txt", "r");
-        char   line[BUFSIZ];
-        //  READ EACH LINE OF THE FILE
-        while(fgets(line, sizeof line, fp) != NULL){
-            printf("%s",line);
-            // my plan is to strip all the comments from the file, so it doesnt interfere with wordScanner()
-            if(comment(line)){
-                commentNum++;
-            }
-            char *ch = line;
-            wordScanner(ch);
-            
-        }
+        commentStrip(fp);
+        
         printf("\n\n");
         printf("---------The number of comments is: %i ----------\n", commentNum); // this is for testing purposes
         
-        // if the line has a " = " in it, then consider the line to be a variable declaration.
-        
-        
-        // if the line has a " target: " in it, then treat dependancies
-        
-        
-        
-        // the line after the target line is an action.
         fclose(fp);
     }
     //  NOT PRESENT IN DIRECTORY, SO TRY PRESENT WORKING DIRECTORY
@@ -93,6 +75,19 @@ int main(int argc, char *argv[])
     }
 }
 
+
+
+
+
+
+
+// if the line has a " = " in it, then consider the line to be a variable declaration.
+
+
+// if the line has a " target: " in it, then treat dependancies
+
+
+// the line after the target line is an action.
 
 
 
