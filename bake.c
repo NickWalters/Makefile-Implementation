@@ -40,16 +40,13 @@ void commentStrip(FILE * fp){
     char buffer[MAX_SIZE];
     FILE * bakeOpen = fopen("Bakefile.txt", "a+");
     bool end = false;
-    while(!end){
-        while(fgets(buffer, sizeof(buffer), fp) != NULL){
-            if(comment(buffer[0])){
-                fprintf(bakeOpen, "%", buffer);
-            }
-            else{
-                continue;
-            }
+    while(fgets(buffer, sizeof(buffer), fp) != NULL){
+        if(comment(buffer[0])){
+            fprintf(bakeOpen, "%", buffer);
         }
-        end = true; // break
+        else{
+            continue;
+        }
     }
 }
 
