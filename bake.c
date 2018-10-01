@@ -14,6 +14,8 @@
 #include <unistd.h>
 
 
+int commentNum = 0;
+
 
 // This function checks if the line is a comment
 bool comment(char * ch)
@@ -37,12 +39,12 @@ bool comment(char * ch)
 
 // this function disgregards all comments in the file
 void commentStrip(FILE * fp){
-    char buffer[9000];
-    FILE * bakeOpen = fopen("Bakefile.txt", "a+");
-    bool end = false;
-    while(fgets(buffer, sizeof(buffer), fp) != NULL){
-        if(comment(buffer[0])){
-            //
+    char line[9000];
+    FILE * bakeOpen = fopen("Bakefile.txt", "a");
+    // scan each line of the file
+    while(fgets(line, sizeof(line), fp) != NULL){
+        if(comment(&line[0])){
+            commentNum++;
         }
         else{
             continue;
@@ -55,10 +57,9 @@ void commentStrip(FILE * fp){
 
 int main(int argc, char *argv[])
 {
-    int commentNum = 0;
     //  ATTEMPT TO OPEN AND READ FROM PROVIDED FILENAME
     if((fopen("Bakefile.txt", "r") != NULL)) {
-        FILE *fp = fopen("Bakefile.txt", "r");
+        FILE * fp = fopen("Bakefile.txt", "r");
         commentStrip(fp);
         
         printf("\n\n");
