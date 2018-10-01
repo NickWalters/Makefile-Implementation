@@ -15,6 +15,7 @@
 
 
 int commentNum = 0;
+int *commentLines = NULL;
 
 
 // This function checks if the line is a comment
@@ -52,13 +53,16 @@ bool variable(char * ch){
 
 // this function disgregards all comments in the file
 void commentStrip(FILE * fp){
-    // TODO: should figure out a way to dynamically allocate memory, instead of just using 9000 for the array
+    // TODO: should figure out a way to dynamically allocate memory, instead of just using 9000 for the array. We need to allocate the exact amount of memory needed.
     char line[9000];
     FILE * bakeOpen = fopen("Bakefile.txt", "a");
     // scan each line of the file
+    int lineNum = 0;
     while(fgets(line, sizeof(line), fp) != NULL){
         if(comment(&line[0])){
-            commentNum++;
+            commentLines = realloc(commentLines,(commentNum+1) * sizeof(commentLines[0]));
+            commentLines[commentNum] = lineNum;
+            ++commentNum;
         }
         else{
             continue;
@@ -92,6 +96,11 @@ int main(int argc, char *argv[])
         commentStrip(fp);
         
         printf("\n\n");
+        int length = sizeof(commentLines)/sizeof(int);
+        for(int i=0; i<length; i++){
+            printf("Comment on Line: %x\n", *commentLines);
+            ++commentLines;
+        }
         printf("---------The number of comments is: %i ----------\n", commentNum); // this is for testing purposes
         
         fclose(fp);
