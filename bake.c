@@ -37,8 +37,22 @@ bool comment(char * ch)
     }
 }
 
+
+
+
+// this function checks if the following line contains a variable definition '='
+bool variable(char * ch){
+    
+}
+
+
+
+
+
+
 // this function disgregards all comments in the file
 void commentStrip(FILE * fp){
+    // TODO: should figure out a way to dynamically allocate memory, instead of just using 9000 for the array
     char line[9000];
     FILE * bakeOpen = fopen("Bakefile.txt", "a");
     // scan each line of the file
@@ -52,6 +66,21 @@ void commentStrip(FILE * fp){
     }
 }
 
+
+
+void variableSearch(FILE * fp){
+    char line[9000];
+    FILE * bakeOpen = fopen("Bakefile.txt", "a");
+    // scan each line of the file
+    while(fgets(line, sizeof(line), fp) != NULL){
+        if(variable(&line[0])){
+            
+        }
+        else{
+            //
+        }
+    }
+}
 
 
 
