@@ -70,7 +70,7 @@ bool variable(char * ch){
 
 
 
-
+// this returns an int pointer array. each value refers to the line number of a comment
 int *commentStrip(FILE * fp){
     int size = 0;
     int capacity = INITIAL_CAPACITY;
