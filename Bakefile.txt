@@ -2,6 +2,9 @@
 
 Hello this is a regular line
 
+# another comment
+# another comment
+
 VARIABLE = man curl
 
 Target: dependancy

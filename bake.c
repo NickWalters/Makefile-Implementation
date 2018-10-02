@@ -36,6 +36,7 @@ bool comment(char * ch)
             return false;
         }
     }
+    return false;
 }
 
 
@@ -43,7 +44,7 @@ bool comment(char * ch)
 
 // this function checks if the following line contains a variable definition '='
 bool variable(char * ch){
-    
+    return false;
 }
 
 
@@ -55,7 +56,6 @@ bool variable(char * ch){
 void commentStrip(FILE * fp){
     // TODO: should figure out a way to dynamically allocate memory, instead of just using 9000 for the array. We need to allocate the exact amount of memory needed.
     char line[9000];
-    FILE * bakeOpen = fopen("Bakefile.txt", "a");
     // scan each line of the file
     int lineNum = 0;
     while(fgets(line, sizeof(line), fp) != NULL){
@@ -74,7 +74,6 @@ void commentStrip(FILE * fp){
 
 void variableSearch(FILE * fp){
     char line[9000];
-    FILE * bakeOpen = fopen("Bakefile.txt", "a");
     // scan each line of the file
     while(fgets(line, sizeof(line), fp) != NULL){
         if(variable(&line[0])){
