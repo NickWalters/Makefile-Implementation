@@ -24,7 +24,7 @@ int commentNum = 0;
 // this function used to create dynamic arrays, to save memory.
 void push(int *arr, int index, int value, int *size, int *capacity){
     if(*size > *capacity){
-        realloc(arr, sizeof(arr) * 2);// if the array is full, then make a new array with double the size
+        realloc(arr, (*size+1) * sizeof(arr[0])); //dynamically re-size the array, to fit the next added element
         *capacity = sizeof(arr) * 2;
     }
     arr[index] = value;
