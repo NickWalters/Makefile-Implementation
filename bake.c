@@ -17,6 +17,7 @@
 
 
 int commentNum = 0;
+int varNum = 0;
 
 
 
@@ -42,7 +43,7 @@ void push(int *arr, int index, int value, int *size, int *capacity){
 // This function checks if the line is a comment
 bool comment(char * ch)
 {
-    bool finished = false; // loop condition
+    bool finished = false; // loop condition. Could probably use ch != '/0', while loop instead
     int i= 0;
     while(!finished){
         if(isspace(ch[i])){
@@ -62,9 +63,20 @@ bool comment(char * ch)
 
 
 
-
+// DOESNT WORK YET
 // this function checks if the following line contains a variable definition '='
 bool variable(char * ch){
+    int i = 0;
+    while(*ch != '\0'){
+        if(ch[i] == '='){
+            ++varNum;
+            return true;
+        }
+        else{
+            ++ch;
+            ++i;
+        }
+    }
     return false;
 }
 
@@ -100,6 +112,8 @@ int *commentStrip(FILE * fp){
 
 
 
+
+
 void variableSearch(FILE * fp){
     int size = 0;
     int capacity = INITIAL_CAPACITY;
@@ -107,7 +121,7 @@ void variableSearch(FILE * fp){
     // scan each line of the file
     while(fgets(line, sizeof(line), fp) != NULL){
         if(variable(&line[0])){
-            //
+            // DO SOMETHING
         }
         else{
             //
@@ -123,13 +137,15 @@ int main(int argc, char *argv[])
     if((fopen("Bakefile.txt", "r") != NULL)) {
         FILE * fp = fopen("Bakefile.txt", "r");
         int *commentLines = commentStrip(fp);
+        variableSearch(fp);
         
         printf("\n\n");
         for(int i=0; i<commentNum; i++){
             printf("Comment on Line: %x\n", *commentLines);
             ++commentLines;
         }
-        printf("---------The number of comments is: %i ----------\n", commentNum); // this is for testing purposes
+        printf("---------The number of comments are: %i ----------\n", commentNum); // this is for testing purposes
+        printf("---------The number of variables are: %i ----------\n", varNum); // this is for testing purposes
         
         fclose(fp);
     }

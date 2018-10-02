@@ -2,8 +2,8 @@
 
 Hello this is a regular line. It should do nothing
 
-# another comment
-      
+# another comment 
+    
   #comment with whitespace before
 VARIABLE = man curl
 
