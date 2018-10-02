@@ -65,17 +65,16 @@ bool comment(char * ch)
 
 // DOESNT WORK YET
 // this function checks if the following line contains a variable definition '='
-bool variable(char * ch){
+bool var(char * ch){
     int i = 0;
     while(*ch != '\0'){
         if(ch[i] == '='){
             ++varNum;
             return true;
         }
-        else{
-            ++ch;
-            ++i;
-        }
+        printf("%c", ch[i]);
+        ++i;
+        ++ch;
     }
     return false;
 }
@@ -115,13 +114,12 @@ int *commentStrip(FILE * fp){
 
 
 void variableSearch(FILE * fp){
-    int size = 0;
-    int capacity = INITIAL_CAPACITY;
-    char line[9000];
+    char line[BUFSIZ];
     // scan each line of the file
     while(fgets(line, sizeof(line), fp) != NULL){
-        if(variable(&line[0])){
+        if(var(&line[0])){
             // DO SOMETHING
+            ++varNum;
         }
         else{
             //
