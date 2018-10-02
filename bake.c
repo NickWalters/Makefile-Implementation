@@ -81,8 +81,8 @@ int *commentStrip(FILE * fp){
     int lineNum = 0;
     while(fgets(line, sizeof(line), fp) != NULL){
         if(comment(&line[0])){
-            ++commentNum;
             push(commentLines, commentNum, lineNum, &size, &capacity);
+            ++commentNum;
             ++lineNum;
         }
         else{
