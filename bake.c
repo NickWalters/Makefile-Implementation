@@ -25,6 +25,9 @@ int commentNum = 0;
 void push(int *arr, int index, int value, int *size, int *capacity){
     if(*size > *capacity){
         realloc(arr, (*size+1) * sizeof(arr[0])); //dynamically re-size the array, to fit the next added element
+        if(arr == NULL){
+            // TREAT THE ERROR
+        }
         *capacity = sizeof(arr) * 2;
     }
     arr[index] = value;
@@ -43,10 +46,10 @@ bool comment(char * ch)
     int i= 0;
     while(!finished){
         if(isspace(ch[i])){
-            ch++;
-            i++;
+            ++ch;
+            ++i;
         }
-        else if (ch[0] == '#')
+        else if (ch[i] == '#')
         {
             return true;
         }
@@ -75,6 +78,9 @@ int *commentStrip(FILE * fp){
     int size = 0;
     int capacity = INITIAL_CAPACITY;
     int *commentLines = malloc(INITIAL_CAPACITY * sizeof(int));
+    if(commentLines == NULL){
+        // TREAT THE ERROR
+    }
     // TODO: should figure out a way to dynamically allocate memory, instead of just using 9000 for the array. We need to allocate the exact amount of memory needed.
     char line[9000];
     // scan each line of the file
@@ -95,6 +101,8 @@ int *commentStrip(FILE * fp){
 
 
 void variableSearch(FILE * fp){
+    int size = 0;
+    int capacity = INITIAL_CAPACITY;
     char line[9000];
     // scan each line of the file
     while(fgets(line, sizeof(line), fp) != NULL){
