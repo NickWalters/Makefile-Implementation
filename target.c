@@ -187,7 +187,7 @@ void rebuildCheck(){
 
 int main(int argc, char *argv[]){
     targetLines();
-    printf("-- Checking Modification Dates --");
+    printf("-- Checking Modification Dates --\n");
     rebuildCheck();
     // directorySearch();
     // testMethod();
