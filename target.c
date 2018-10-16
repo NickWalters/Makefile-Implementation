@@ -176,12 +176,14 @@ void rebuildCheck(){
             }
             else{
                 if(files[i][j] != NULL){
-                    char * path = pathAppend(files[i][j]);
-                    time_t dependancyCreationDate = getFileCreationTime(path);
-                    if(difftime(dependancyCreationDate, targetCreationDate) > 0){
-                        rebuildFile[rebuildCount] = files[i][j];
-                        printf("rebuildFile[%i]: %s\n", rebuildCount, rebuildFile[rebuildCount]);
-                        ++rebuildCount;
+                    if(files[i][j] != NULL){
+                        char * path = pathAppend(files[i][j]);
+                        time_t dependancyCreationDate = getFileCreationTime(path);
+                        if(difftime(dependancyCreationDate, targetCreationDate) > 0){
+                            rebuildFile[rebuildCount] = files[i][j];
+                            printf("rebuildFile[%i]: %s\n", rebuildCount, rebuildFile[rebuildCount]);
+                            ++rebuildCount;
+                    }
                 }
                 else{
                     continue;
