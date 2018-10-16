@@ -7,5 +7,8 @@ Hello this is a regular line. It should do nothing
   #comment with whitespace before
 VARIABLE = man curl
 
-Target: dependancy
+wow asdhjash $(VARIABLE) test $(check) $(HOME)            $(PID)
+wow$(HOME)test
+
+test :  multi.o  test.h argChecking.c
 	action
