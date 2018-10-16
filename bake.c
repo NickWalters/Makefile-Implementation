@@ -3,6 +3,7 @@
  Student number(s):    22243339 ,
  */
 
+/*
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -11,6 +12,9 @@
 #include <ctype.h>
 #include <limits.h>
 //#include <linux/limits.h>
+ */
+
+#include "bake.h"
 
 #define INITIAL_CAPACITY 20
 
