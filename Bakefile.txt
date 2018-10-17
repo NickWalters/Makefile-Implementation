@@ -10,5 +10,5 @@ VARIABLE = man curl
 wow asdhjash $(VARIABLE) test $(check) $(HOME)            $(PID)
 wow$(HOME)test
 
-test :  multi.o  test.h argChecking.c
+test :  multi.o  bake.h
 	action
