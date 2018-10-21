@@ -126,8 +126,8 @@ int targetCount = 0;
 
 
 void rebuildCheck(){
+    printf("----Running rebuild Check----\n");
     // can i replace this target value? or is it constant?
-    char * target;
     time_t targetCreationDate = time(NULL);
     
     if(targetCount != 0){
@@ -140,17 +140,18 @@ void rebuildCheck(){
                         // if it is a URL, then check modification date using curl (inside urlDate() function)
                         if(strstr(files[i][j],"file://") != NULL || strstr(files[i][j],"http://") != NULL || strstr(files[i][j],"https://") != NULL){
                             
-                            target = files[i][j];
-                            targetCreationDate = urlDate(target);
+                            targetCreationDate = urlDate(files[i][j]);
                             if(targetCreationDate == -1){
                                 perror("could not find URL");
                             }
                         }
                         // else, its a regular file. And check modification date using normal method
-                        else{
-                            target = files[i][j];
+                        else if(files[i][j] != NULL){
                             char * targetPath = pathAppend(files[i][j]);
                             targetCreationDate = getFileCreationTime(targetPath);
+                        }
+                        else{
+                            continue;
                         }
                     }
                     else{
