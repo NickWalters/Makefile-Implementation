@@ -1,0 +1,15 @@
+INSTRUCTIONS:
+Please run the program with the following command line declaration:
+
+	bake.c target.c urlDate.c -lcurl -o bake
+
+
+Please make sure you have curl, installed on your computer (Mac). The project specifications include use of curl.
+
+
+BY:
+Nicholas Walters
+James Caldon
+
+CITS2002, Semester 2, 2018
+Lecturer: Chris McDonald
