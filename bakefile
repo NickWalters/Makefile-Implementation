@@ -1,0 +1,15 @@
+
+# This is a test bakefile
+
+    # Should work
+
+C99 = gcc -std=c99
+FLAGS = -Wall -Werror -pedantic
+
+hello : hello.c helloworld.h world.o
+    $(C99) $(FLAGS) -o hello hello.c helloworld.h world.o
+
+world.o : world.c helloworld.h time.o
+    $(C99) $(FLAGS) -c world.c helloworld.h
+time.o : time.c helloworld.h
+    $(C99) $(FLAGS) -c time.c helloworld.h

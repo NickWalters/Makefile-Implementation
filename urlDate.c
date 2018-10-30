@@ -1,4 +1,7 @@
-
+/* CITS2002 Project 2018
+ Name(s):        Nicholas Walters , James Caldon
+ Student number(s):    22243339 , 22226341
+ */
 #include "bake.h"
 
 

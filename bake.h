@@ -13,15 +13,28 @@
 #include  <sys/types.h>
 #include  <sys/stat.h>
 #include  <sys/param.h>
+#include <sys/wait.h>
 #include  <dirent.h>
 #include  <time.h>
 #include <limits.h>
 
-extern void targetLines(char * line);
+extern bool targetLines(char ** lines, int numLines);
+
+extern void removeLeadingWhitespace(char * line);
+
+extern void executeShell(char * line, char * cwd, char * targetFile);
+
+extern bool isActionLine(char * line);
+
+extern bool rebuildDefault(void);
+
 extern void print(char * string, ...);
-extern char *files[300][300];
-extern char *rebuildFile[300];
-extern int rebuildCount;
-extern int targetCount;
+
 extern time_t urlDate(char * URL);
+
+extern bool printyBois(void);
+
+extern void push(int * arr, int index, int value, int * size, int * capacity);
+
+
 

@@ -1,16 +1,15 @@
-
 /* CITS2002 Project 2018
  Name(s):        Nicholas Walters , James Caldon
- Student number(s):    22243339 ,
+ Student number(s):    22243339 , 22226341
  */
 
 #include "bake.h"
-//#include <linux/limits.h>
 
 #define INITIAL_CAPACITY 20
 
 int commentNum = 0;
 int varNum = 0;
+
 
 
 
@@ -58,7 +57,7 @@ bool comment(char * ch)
 
 
 
-
+//Checks to see if the line is a comment
 bool isComment(char * line) {
     for (int i=0; line[i] != '\0'; i++) {
         if (line[i] == '#') return true;
@@ -66,38 +65,55 @@ bool isComment(char * line) {
     
     return false;
 }
-/**
- int ** buckets;
- 
- int hashCode(char * string) {
- int hash = 0;
- int strLen = strlen(string);
- 
- for(int i=0; i < strLen; i++) {
- hash = 31 * hash + str[i];
- }
- }
- **/
 
-char * keyArray[100];
+
+
+
+
+//Start with a small number because who doesn't like dynamic allocations
+int numOfKeyValPairs = 8;
+//Stores Keys
+char ** keyArray;
+
 int nextKey = 0;
-char * valArray[100];
+
+//Stores Values to the keys
+char ** valArray;
 int nextVal = 0;
+// ADD VARIABLES TO BE USED LATER (FROM THE BAKEFILE)
 void addVariables(char * key, char * val) {
-    //TODO check if array is large enough and for malloc nulls
-    keyArray[nextKey] = malloc(strlen(key)*sizeof(char));
-    valArray[nextVal] = malloc(strlen(val)*sizeof(char));
+    if (nextKey >= numOfKeyValPairs) {
+        numOfKeyValPairs = numOfKeyValPairs*2;
+        char ** keys;
+        char ** vals;
+        keys = realloc(keyArray, (numOfKeyValPairs) * sizeof(char*));
+        vals = realloc(valArray, (numOfKeyValPairs) * sizeof(char*));
+        if (keys == NULL || vals == NULL) {
+            exit(EXIT_FAILURE);
+        }
+        keyArray = keys;
+        valArray = vals;
+    }
+    int keyLength = strlen(key);
+    int valLength = strlen(val);
+    keyArray[nextKey] = malloc((keyLength+1)*sizeof(char));
+    valArray[nextVal] = malloc((valLength+1)*sizeof(char));
+
+    if (keyArray[nextKey] == NULL || valArray[nextVal] == NULL) exit(EXIT_FAILURE);
     
-    //keyArray[nextKey++] = key;
-    //valArray[nextVal++] = val;
-    strcpy(keyArray[nextKey++], key);
-    strcpy(valArray[nextVal++], val);
+    strncpy(keyArray[nextKey], key, keyLength + 1);
+    strncpy(valArray[nextVal], val, valLength + 1);
     
-    //print("%s", keyArray[nextKey-1]);
+    keyArray[nextKey++][keyLength] = '\0';
+    valArray[nextVal++][valLength] = '\0';
+    
 }
 
+
+
+// definition of variables from a LINE
 void defineVariables(char * line) {
-    
+
     int startPotKey = 0;
     int endPotKey = 0;
     
@@ -127,67 +143,49 @@ void defineVariables(char * line) {
     
     for (int i = endOfLine-1; line[i] != '=' && i >= 0; i--) {
         if (!isspace(line[i-1])) {
-            endOfLine = i;
+            //Issue here?
+            endOfLine = i + 1;
             break;
         }
     }
     
-   // print("Key start: %i\n", startPotKey);
-   // print("Key end: %i\n", endPotKey);
-    
-    
-   // print("Value start: %i\n", startPotVal);
-   // print("Value end: %i\n", endOfLine);
     
     int keyLength = endPotKey-startPotKey;
     int valLength = endOfLine-startPotVal;
     
-    //print("KeyLength: %i && ValLength: %i\n", keyLength, valLength);
     
-    char * var = malloc(keyLength * sizeof(char));
-    char * val = malloc(valLength * sizeof(char));
-    
-    
-    strncpy(var, line+startPotKey, endPotKey-startPotKey);
-    var[keyLength] = '\0';
-    strncpy(val, line+startPotVal, endOfLine-startPotVal);
-    val[valLength] = '\0';
-    
-    addVariables(var, val);
-   // print("KeyLength: %lu && ValLength: %lu\n", strlen(var), strlen(val));
-     //print("Found variable name:--%s--\n", var);
-    //print("Found value name:--%s--\n", val);
-    
-    /**
-   char *var = malloc(strlen(line)*sizeof(char));
+    char * var = malloc((keyLength+1) * sizeof(char));
+    char * val = malloc((valLength+1) * sizeof(char));
 
-   strcpy(var, line);
-   var = strtok(var, "=");
-   char *val = malloc(strlen(line)*sizeof(char));
-    if (var != NULL) {
-        val = strtok(NULL, ":");
-        if(val != NULL)
-        addVariables(var, val);
-    }
-     **/
+    
+    strncpy(var, line+startPotKey, keyLength + 1);
+    var[keyLength] = '\0';
+    strncpy(val, line+startPotVal, valLength + 1);
+    val[valLength] = '\0';
+    addVariables(var, val);
+    free(var);
+    free(val);
 }
 
+
+// expand the variables on the line, in where the variable is mentioned
 void expandVariable(char * line, int l, char * var, int i, int endPos, int keyLength, char * val) {
     //Process Line
     int valueLength = strlen(val);
-    //print("Found this cool thing: %s\n Which should become: %s\n", var, val);
-    char * newLine = malloc((l-keyLength+valueLength)*sizeof(char));
-    
+    char * newLine = malloc((l - keyLength + valueLength+1)*sizeof(char));
+    if (newLine == NULL) exit(EXIT_FAILURE);
     strncpy(newLine, line, i);
     strncpy(newLine+i, val, valueLength);
-    strncpy(newLine+i+valueLength, line + endPos+1, l - endPos);
+    strncpy(newLine+i+valueLength, line + endPos+1, l - endPos+1);
     newLine[l- keyLength + valueLength] = '\0';
-    //print("Old line: %s\n New line: %s\n", line, newLine);
     
     strcpy(line, newLine);
     free(newLine);
 }
 
+
+
+// same process
 void expandVariables(char * line) {
     for (int i=0; line[i] != '\0'; i++) {
         
@@ -202,7 +200,7 @@ void expandVariables(char * line) {
             }
             int varLength = (endPos-i-2);
             char * var = malloc((varLength+1)*sizeof(char));
-            strncpy(var, line + i+2, varLength);
+            strncpy(var, line + i+2, varLength+1);
             var[varLength] = '\0';
             bool found = false;
             for (int k = 0; k < nextKey; k++) {
@@ -227,9 +225,16 @@ void expandVariables(char * line) {
     }
 }
 
+
+
+
+
+
+
 void addDefaultVariables(char * key, int value) {
-    char * val = malloc(sizeof(value));
-    sprintf(val, "%i", value);
+    int valLength = snprintf(NULL, 0, "%d", value);
+    char * val = malloc(valLength+1);
+    snprintf(val, valLength+1, "%i", value);
     addVariables(key, val);
     free(val);
 }
@@ -246,7 +251,12 @@ struct Options {
     bool print;
     bool silent;
 };
-struct Options options;
+struct Options options = {NULL, NULL, false, false, false, false};
+
+
+
+
+
 
 
 void print(char * string, ...) {
@@ -261,62 +271,147 @@ void print(char * string, ...) {
 }
 
 
+
+
+
 bool isActionLine(char * line) {
     return (line[0] == '\t');
 }
+
+
 
 bool isTargetLine(char * line) {
     return (strchr(line, ':') != NULL);
 }
 
-void executeShell(char * line, char * cwd) {
-    //pid_t parent = getpid();
+
+
+void executeShell(char * line, char * cwd, char * targetFile) {
+    bool ignoreErrors = false;
+    bool noPrint = false;
+    if ((line[0] == '@' && line[1] == '-') || ((line[1] == '@' && line[0] == '-'))) {
+        //Ignore Errors and don't print output
+        ignoreErrors = true;
+        noPrint = true;
+        line++;
+        line++;
+
+    } else if (line[0] == '@' || line[0] == '@') {
+        //Do not print output
+        ignoreErrors = false;
+        noPrint = true;
+        line++;
+    } else if (line[0] == '-' || line[1] == '-') {
+        //Ignore Errors
+        ignoreErrors = true;
+        noPrint = false;
+        line++;
+    } else {
+        //Don't continue on error and print output
+        ignoreErrors = false;
+        noPrint = false;
+    }
     pid_t pid = fork();
     
     if (pid == -1)
     {
-        // error, failed to fork()
-    }
-    else if (pid > 0)
-    {
+        print("The fork failed! Exiting...\n");
+        exit(EXIT_FAILURE);
+    } else if (pid > 0) {
         int status;
         waitpid(pid, &status, 0);
-    }
-    else
-    {
-        // we are the child
-        char * substring = malloc((strlen(line)-3)*sizeof(char));
-        strncpy(substring,line +1 , strlen(line)-3);
-        substring[strlen(line)-3] = '\0';
-        execl(getenv("SHELL"), cwd, "-c", substring, NULL);
-        exit(EXIT_FAILURE);   // exec never returns
+        if (WIFEXITED(status)) {
+            print("Command executing!\n");
+            if (WEXITSTATUS(status) != 0) {
+                
+                if(!options.ignore && !ignoreErrors) {
+                    print("Command failed!!!\n");
+                    exit(EXIT_FAILURE);
+                }
+            }
+        } else {
+            
+            if(!options.ignore && !ignoreErrors) {
+                print("Oh no, child process could not start execution of the command!!!\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+    } else {
+        //Child Process
+        char * shellShocked;
+        if (getenv("SHELL") == NULL) {
+            shellShocked = malloc((strlen("/bin/bash")+1)*sizeof(char));
+            strcpy(shellShocked, "/bin/bash");
+        } else {
+            shellShocked = malloc((strlen(getenv("SHELL"))+1)*sizeof(char));
+            strcpy(shellShocked, getenv("SHELL"));
+        }
+        if (targetFile == NULL) {
+            if(options.print) {
+
+                print("Executing Command: %s -c %s\n", shellShocked, line);
+            } else {
+                if (!noPrint) print("Executing Command: %s -c %s\n", shellShocked, line);
+                if(!options.fakeout) {
+                    execl(shellShocked, cwd, "-c", line, NULL);
+                    exit(EXIT_FAILURE);   // exec never returns
+                }
+                exit(EXIT_SUCCESS);
+            }
+            
+            exit(EXIT_SUCCESS);   // exec never returns
+        } else {
+            if(options.print) {
+
+                print("Executing Command: %s -c %s -o %s\n", shellShocked, line, targetFile);
+            } else {
+                if (!noPrint) print("Executing Command: %s -c %s -o %s\n", shellShocked, line, targetFile);
+                if(!options.fakeout) {
+                    execl(shellShocked, cwd, "-c", line, "-o", targetFile, NULL);
+                    
+                    exit(EXIT_FAILURE);   // exec never returns
+                }
+                exit(EXIT_SUCCESS);
+            }
+            
+            exit(EXIT_SUCCESS);   // exec never returns
+        }
     }
 }
 
-bool needsRebuilding(char * fileName) {
-    for (int i = 0; i < rebuildCount; i++) {
-        if(strcmp(fileName,rebuildFile[rebuildCount]) == 0)
-        return true;
+
+
+
+
+void removeLeadingWhitespace(char * line) {
+    
+    int length = strlen(line);
+    int posOfChar = 0;
+    for(int i = 0; i < length; i++)
+    {
+        if (!isspace(line[i])) {
+            posOfChar = i;
+            break;
+        }
     }
-    return false;
+    memmove(line, line + posOfChar, length - posOfChar + 1);
+    line[length - posOfChar] = '\0';
 }
+
+
+
 
 
 int main(int argc, char *argv[])
 {
+    
+    //Initial amount for key value arrays i.e. 32 key value pairs
+    keyArray = malloc(numOfKeyValPairs * sizeof(char*));
+    valArray = malloc(numOfKeyValPairs * sizeof(char*));
+    
     //  ATTEMPT TO OPEN AND READ FROM PROVIDED FILENAME
-    //char * testString = " VARIABLE = man curl";
-    // defineVariables(testString);
-    //exit(0);
-    //executeShell("cc -std=c99 -Wall -pedantic -Werror -c validation.c");
-    //char * command = "cc -std=c99 -Wall -pedantic -Werror -c validation.c";
-    //char * string = "cd ";
-    //strcat();
     char cwd[PATH_MAX];
     getcwd(cwd, sizeof(cwd));
-    //int r = execl("/bin/bash", cwd, "-c", "cc -std=c99 -Wall -pedantic -Werror -c conversions.c", NULL);
-    //printf("r = %d   errno = %d",r,errno);
-    //exit(0);
     int option;
     while ((option = getopt(argc, argv, "c:f:inps")) != -1)
     {
@@ -349,15 +444,22 @@ int main(int argc, char *argv[])
     }
     
     
-    
+    //CHANGE
     FILE * fp = fopen("bakefile.txt", "r");
     if(fp == NULL) {
         fp = fopen("Bakefile.txt", "r");
+    }
+    if(fp == NULL) {
+        fp = fopen("bakefile", "r");
+    }
+    if(fp == NULL) {
+        fp = fopen("Bakefile", "r");
     }
     if (options.filename != NULL) {
         fp = fopen(options.filename, "r");
     }
     if(fp != NULL) {
+        
         fseek(fp, 0L, SEEK_END);
         int sz = ftell(fp);
         rewind(fp);
@@ -376,109 +478,63 @@ int main(int argc, char *argv[])
         bool buffered = false;
         
         int numLines = 0;
-        bool lastLineWasTargetLine = false;
-        int numTargetLines = 0;
-        char * targetFile = malloc(5*sizeof(char));
         while(fgets(line, sz, fp) != NULL){
-            
             int l = strlen(line);
-            if (line[l-2] == '\\') {
+            
+            //Check if line bleeds onto next line
+            if (l > 2 && line[l-2] == '\\') {
+
                 strncpy(bufferedLine + bufferedPos, line, l-2);
                 bufferedPos += l-2;
                 bufferedLine[bufferedPos] = '\0';
                 buffered = true;
+                
                 continue;
             } else if (buffered) {
+                
+                removeLeadingWhitespace(line);
                 strncpy(bufferedLine + bufferedPos, line, l);
                 bufferedPos += l;
                 bufferedLine[bufferedPos] = '\0';
                 strcpy(line, bufferedLine);
                 bufferedLine[0] = '\0';
                 buffered = false;
+                
             }
             
             l = strlen(line);
-            char * debug = malloc((l+1)*sizeof(*debug));
-            
-            strncpy(debug, line, l);
-            
-            debug[l] = '\0';
-            
-            //print("___%s___\n", debug);
             
             if (isComment(line)) {numComments++; continue;}
+            
+
             expandVariables(line);
-            
-            if (isTargetLine(line)) {
-                targetLines(line);
-                lastLineWasTargetLine = true;
-                numTargetLines++;
-                print("IsTargetLine\n");
-                int startPos = -1;
-                int endPos = -1;
-                for (int i = 1; i+1 < l && line[i-1] != ':'; i++) {
-                    if (!isspace(line[i-1]) && startPos == -1) startPos = i-1;
-                    if (!isspace(line[i-1]) && (isspace(line[i]) || line[i] == ':')) endPos = i;
-                }
-                printf("%i %i\n", startPos, endPos);
-                targetFile = realloc(targetFile, endPos-startPos);
-                strncpy(targetFile, line + startPos, endPos-startPos);
-                targetFile[endPos-startPos] = '\0';
-                
-            } else if (isActionLine(line) && lastLineWasTargetLine) {
-                lastLineWasTargetLine = false;
-                if (needsRebuilding(targetFile)) {
-                    printf("Execution Commencing! Rebuilding %s\n", targetFile);
-                    executeShell(line, cwd);
-                }
-                print("IsActionLine\n");
-            } else {
-                lastLineWasTargetLine = false;
-                defineVariables(line);
-            }
-            
-            
+
+            line[strcspn(line, "\n")] = '\0';
+            defineVariables(line);
             l = strlen(line);
-            printf("Length: %i |%s", l, line);
-            lines[numLines] = malloc(l*sizeof(char));
-            strncpy(lines[numLines++], line, l+1);
-            
+            if (l > 0) {
+                lines[numLines] = malloc((l+1) *sizeof(char));
+                strncpy(lines[numLines], line, (l+1));
+                lines[numLines++][l] = '\0';
+            }
         }
-        for (int i = 0; i < numLines; i++) {
-            //print("Length: %lu |%s", strlen(lines[i]), lines[i]);
+        if (options.print) {
+            for (int i=0; i < nextKey; i++) {
+                print("Key: %s | Val: %s\n", keyArray[i], valArray[i]);
+            }
         }
-        for (int i=0; i < nextKey; i++) {
-            print("Key: %s | Val: %s\n", keyArray[i], valArray[i]);
-        }
+
+        targetLines(lines, numLines);
+        
+        
         print("\n");
-        //
         fclose(fp);
-    }
-    //  NOT PRESENT IN DIRECTORY, SO TRY PRESENT WORKING DIRECTORY
-    else {
-        /**
-         char cwd[PATH_MAX];
-         if (getcwd(cwd, sizeof(cwd)) != NULL) {
-         print("Current working dir: %s\n", cwd);
-         }
-         **/
     }
 }
 
-
-
-
-
-
-
-// if the line has a " = " in it, then consider the line to be a variable declaration.
-
-
-// if the line has a " target: " in it, then treat dependancies
-
-
-// the line after the target line is an action.
-
+bool printyBois(void) {
+    return options.print;
+}
 
 
 
