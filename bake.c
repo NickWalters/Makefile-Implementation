@@ -417,7 +417,7 @@ int main(int argc, char *argv[])
     {
         switch (option)
         {
-            case 'c':
+            case 'C':
                 if (strlen(optarg) == 0) exit(1);
                 options.dir = malloc(strlen(optarg)*sizeof(char));
                 strcpy(options.dir, optarg);

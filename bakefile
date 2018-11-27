@@ -1,15 +1,20 @@
 
-# This is a test bakefile
+# A Makefile to build our ‘Bake’ project
 
-    # Should work
+C99     =  cc -std=c99
+CFLAGS  =  -Wall -pedantic -Werror
 
-C99 = gcc -std=c99
-FLAGS = -Wall -Werror -pedantic
 
-hello : hello.c helloworld.h world.o
-    $(C99) $(FLAGS) -o hello hello.c helloworld.h world.o
+              bake : bake.o target.o urlDate.o
+	$(C99) $(CFLAGS) -o bake \
+		bake.o target.o urlDate.o -lcurl
 
-world.o : world.c helloworld.h time.o
-    $(C99) $(FLAGS) -c world.c helloworld.h
-time.o : time.c helloworld.h
-    $(C99) $(FLAGS) -c time.c helloworld.h
+
+bake.o : bake.c bake.h
+	$(C99) $(CFLAGS) -c bake.c
+
+target.o : target.c bake.h
+	$(C99) $(CFLAGS) -c target.c
+
+urlDate.o : urlDate.c bake.h
+	$(C99) $(CFLAGS) -c urlDate.c

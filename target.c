@@ -86,7 +86,7 @@ int targetCount = 0;
 void rebuildCheck(){
     print("----Running rebuild Check----\n");
     time_t targetCreationDates[targetCount];
-    rebuildFile = calloc(maxRebuilds, sizeof(char));
+    if (rebuildFile == NULL) rebuildFile = calloc(maxRebuilds, sizeof(char));
     if(targetCount != 0){
         for(int i=0; i<targetCount; i++){
             // can change this later. we dont always want to use 300 as max size
@@ -126,10 +126,9 @@ void rebuildCheck(){
                             if(difftime(dep_creationDate, targetCreationDates[i]) > 0){
                                 
                                 
-                                int length = strlen(files[i][j]);
+                                int length = strlen(files[i][0]);
                                 rebuildFile[rebuildCount] = malloc((length+1)*sizeof(char));
                                 strncpy(rebuildFile[rebuildCount], files[i][0], length+1);
-                                
                                 rebuildFile[rebuildCount][length] = '\0';
                                 rebuildCount++;
                             }
@@ -257,6 +256,7 @@ bool targetLines(char ** lines, int numLines){
     files = calloc(numLines, sizeof(char**));
     dependancyMap = malloc(maxDependanciesToTest * sizeof(int));
     dIndex = malloc(maxDependanciesToTest * sizeof(int));
+    
     for(int k=0; k < numLines; k++) {
         if (files[targetCount] == NULL) files[targetCount] = calloc(maxFilesCols, sizeof(char*));
         for(int i=0; lines[k][i] != '\0'; i++) {
@@ -268,7 +268,7 @@ bool targetLines(char ** lines, int numLines){
                 lineCopy[strLength] = '\0';
                 char *fileName;
                 // split into filenames
-                fileName = strtok(lineCopy, " ");
+                fileName = strtok(lineCopy, " :");
                 int i = 0;
                 while (fileName != NULL)
                 {
@@ -277,6 +277,7 @@ bool targetLines(char ** lines, int numLines){
                     if(*fileName != ':'){
                         // if it is a URL
                         if(strstr(fileName,"file://") != NULL || strstr(fileName,"http://") != NULL || strstr(fileName,"https://") != NULL){
+                            
                             // work with URL here
                             int length = strlen(fileName);
                             files[targetCount][i] = malloc((length+1) * sizeof(char));
@@ -291,7 +292,9 @@ bool targetLines(char ** lines, int numLines){
                             files[targetCount][i] = malloc((length+1)*sizeof(char));
                             strncpy(files[targetCount][i], fileName, length+1);
                             files[targetCount][i][length] = '\0';
+
                             if(i==0){
+                                if (rebuildFile == NULL) rebuildFile = calloc(maxRebuilds, sizeof(char));
                                 int length = strlen(fileName);
                                 rebuildFile[rebuildCount] = malloc((length+1)*sizeof(char));
                                 strncpy(rebuildFile[rebuildCount], fileName, length+1);
@@ -309,8 +312,10 @@ bool targetLines(char ** lines, int numLines){
                                         exit(EXIT_FAILURE);
                                     }
                                 }
+                                
                                 dependancyMap[dependancyCount] = targetCount;
                                 dIndex[dependancyCount++] = i;
+                                if (rebuildFile == NULL) rebuildFile = calloc(maxRebuilds, sizeof(char));
                                 int length = strlen(fileName);
                                 rebuildFile[rebuildCount] = malloc((length+1)*sizeof(char));
                                 strncpy(rebuildFile[rebuildCount], fileName, length+1);
@@ -329,14 +334,17 @@ bool targetLines(char ** lines, int numLines){
                         }
                         i++;
                     }
-                    fileName = strtok(NULL, " ");
+                    fileName = strtok(NULL, " :");
                 }
+                
                 targetCount++;
                 free(lineCopy);
+                break;
             }
             
         }
     }
+    
     // formatting
     if (printyBois()) {
         for(int i = 0; i < targetCount; i++) {
@@ -354,27 +362,25 @@ bool targetLines(char ** lines, int numLines){
             print("RebuildCheck: %s\n", rebuildFile[i]);
     }
     checkDependencies();
-    
-    
     rebuildCheck();
     checkLayered();
-    
-    
-    
     char cwd[PATH_MAX];
     getcwd(cwd, sizeof(cwd));
-    for(int i = targetCount+1; i >= 0; i--) {
+    for(int i = targetCount-1; i >= 0; i--) {
         if (isActionLine(lines[targetMap[i]+1])) {
             if (printyBois()) print("Action Line: %s\n", lines[targetMap[i]+1]);
-            removeLeadingWhitespace(lines[targetMap[i]+1]);
             if (needsRebuilding(files[i][0])) {
                 print("Rebuilding required for: %s\n", files[i][0]);
                 print("Execution Commencing! Rebuilding %s\n", files[i][0]);
-                print("Action Line to be executed: %s\n", lines[targetMap[i]+1]);
-                executeShell(lines[targetMap[i]+1], cwd, files[i][0]);
-                
-                
-                
+                //1000 limit
+                for(int j = 0; j < numLines-i; j++)
+                {
+                    if ((lines[targetMap[i]+1+j]) != NULL && isActionLine(lines[targetMap[i]+1+j])) {
+                        removeLeadingWhitespace(lines[targetMap[i]+1+j]);
+                        print("Action Line to be executed: %s\n", lines[targetMap[i]+1+j]);
+                        executeShell(lines[targetMap[i]+1+j], cwd, NULL);
+                    } else break;
+                }   
             } else {
                 print("%s Does not need rebuilding\n", files[i][0]);
             }

@@ -1,5 +1,5 @@
 INSTRUCTIONS:
-Please run the program with the following command line declaration:
+Please compile the program with the following command line declaration:
 
 	bake.c target.c urlDate.c -lcurl -o bake
 
